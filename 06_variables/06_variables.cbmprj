@@ -4,7 +4,7 @@
 <!-- Project Target : C64 -->
 <Project>
     <Target>2</Target>
-    <Executable>05_sprite.prg</Executable>
+    <Executable>06_variables.prg</Executable>
     <StartAddress>2049</StartAddress>
     <FilesGlobal>False</FilesGlobal>
     <BatchMode>False</BatchMode>
@@ -14,7 +14,7 @@
     <d64Name />
     <Comments />
     <Author />
-    <AutoLaunchName>05_sprite.prg</AutoLaunchName>
+    <AutoLaunchName>06_variables.prg</AutoLaunchName>
     <NoSingleFileBuild>False</NoSingleFileBuild>
     <Cartridge>
         <CrtBuildingCartridge>False</CrtBuildingCartridge>
@@ -44,6 +44,7 @@
         <FileName>Main.asm</FileName>
         <FileName>Main.asm</FileName>
         <FileName>Main.asm</FileName>
+        <FileName>Main.asm</FileName>
     </BuildList>
     <DetermineBuildOrder>0</DetermineBuildOrder>
     <PaddingByte>0</PaddingByte>
@@ -57,19 +58,8 @@
             <Regions />
             <Breakpoints />
             <Bookmarks />
-            <Topmost>True</Topmost>
-            <FileOpen>True</FileOpen>
-        </SourceFile>
-        <SourceFile>
-            <Name>sprite.spt</Name>
-            <PrgName />
-            <FileType>7</FileType>
-            <IncludeInBuild>True</IncludeInBuild>
-            <Regions />
-            <Breakpoints />
-            <Bookmarks />
             <Topmost>False</Topmost>
-            <FileOpen>False</FileOpen>
+            <FileOpen>True</FileOpen>
         </SourceFile>
     </SourceFiles>
 </Project>
