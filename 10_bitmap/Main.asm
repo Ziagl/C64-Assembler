@@ -2,6 +2,12 @@
 
         BYTE  $0B, $08, $0A, $00, $9E, $32, $30, $36, $34, $00, $00, $00
 
+; *.koa file format
+;1) 2 byte header
+;2) 8000 bytes pixel data
+;3) 1000 byte character data (that I ignore)
+;4) 1000 byte color data
+;5) 1 byte background color
 
 *=$0810
         lda $DD00
