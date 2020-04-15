@@ -1,50 +1,67 @@
-; auto generated sys (Tools->Generate Sys() Call)
-; 10 SYS (4096)
 *=$0801
-        BYTE    $0E, $08, $0A, $00, $9E, $20, $28,  $34, $30, $39, $36, $29, $00, $00, $00
 
-; start address of program in memory 0x1000 = 4096)
-*=$1000
-        ; set border color to image color
-        lda $4710
-        sta $d020
+        BYTE  $0B, $08, $0A, $00, $9E, $32, $30, $36, $34, $00, $00, $00
+
+
+*=$0810
+        lda $DD00
+        and #%11111100
+        ora #%00000010 ; Change Bank to 1
+        sta $DD00
+
+        lda $8710
         sta $d021
+        lda #0
+        sta $d020
+    
 
-        ; copy image data to screen memory
-        ldx #$00
-IMAGE   lda $3F40,x
-        sta $0400,x
-        lda $4040,x
-        sta $0500,x
-        lda $4140,x
-        sta $0600,x
-        lda $4240,x
-        sta $0700,x
+        lda $d011
+        ora #32
+        sta $d011
+        lda $d016
+        ora #$10
+        sta $d016
+                ;$d011=$3b, $d016=$18
+        lda $d011
+        ora #32
+        sta $d011
+       
+        lda $d016
+        ora #16
+        sta $d016
+
+
+        lda #08        ;screenram at $4000 , bitmap at+$2000
+        sta $d018
         
-        lda $4328,x
-        sta $D800,x
-        lda $4428,x
-        sta $D900,x
-        lda $4528,x
-        sta $DA00,x
-        lda $4628,x
-        sta $DB00,x
+        ldx #0
+
+        lda #$00
+
+cppy                    ; copy screenram and colormem
+        lda $7f40,x
+        sta $4000,x
+        lda $8328,x
+        sta $d800,x
+
+        lda $8040,x
+        sta $4100,x
+        lda $8428,x
+        sta $d900,x
+
+        lda $8140,x
+        sta $4200,x
+        lda $8528,x
+        sta $da00,x
+
+        lda $8240,x
+        sta $4300,x
+        lda $8628,x
+        sta $db00,x
         inx
-        bne IMAGE
-        
-        ; switch screen mode to bitmap mode
-        lda #$3B
-        sta $D011
-        ; turn on multicolor-mode
-        lda #$18
-        sta $D016
-
-        ; info for VIC
-        lda #$18
-        sta $D018
+        bne cppy
 
 LOOP    jmp LOOP
-        
 
-*=$1FFE
-        INCBIN "mclaren.prg"
+*=$5FFE ; -2 for loadadress
+        INCBIN "mclaren.koa"
