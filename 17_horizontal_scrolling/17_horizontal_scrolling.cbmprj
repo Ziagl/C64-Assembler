@@ -4,7 +4,7 @@
 <!-- Project Target : C64 -->
 <Project>
     <Target>2</Target>
-    <Executable>17_scrolling.prg</Executable>
+    <Executable>17_horizontal_scrolling.prg</Executable>
     <StartAddress>2049</StartAddress>
     <FilesGlobal>False</FilesGlobal>
     <BatchMode>False</BatchMode>
@@ -14,7 +14,7 @@
     <d64Name />
     <Comments />
     <Author />
-    <AutoLaunchName>17_scrolling.prg</AutoLaunchName>
+    <AutoLaunchName>17_horizontal_scrolling.prg</AutoLaunchName>
     <NoSingleFileBuild>False</NoSingleFileBuild>
     <Cartridge>
         <CrtBuildingCartridge>False</CrtBuildingCartridge>
