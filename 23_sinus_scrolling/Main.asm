@@ -26,9 +26,13 @@ PADCHAR= 32      ; Code used for clearing the screen
         ldx #$00        ; set X to zero (black color code)
         stx $d021       ; set background color
         stx $d020       ; set border color
-   
-        lda #$01      ; set foreground to white in Color Ram 
 clear
+        lda #$20      ; #$20 is the spacebar Screen Code
+        sta $0400,x   ; fill four areas with 256 spacebar characters
+        sta $0500,x 
+        sta $0600,x 
+        sta $06e8,x 
+        lda #$01      ; set foreground to white in Color Ram 
         sta $d800,x  
         sta $d900,x
         sta $da00,x
@@ -96,102 +100,102 @@ LOOP10  sta CHRSET,X    ; Clear the @-sign..
         dex
         bpl LOOP10
 
-        LDA #>CHRSET    ; The right page for addressing
-        STA ZP2+1
-        LDA #<IRQ       ; Our interrupt handler address
-        STA $0314
-        LDA #>IRQ
-        STA $0315
-        LDA #$7F        ; Disable timer interrupts
-        STA $DC0D
-        LDA #$81        ; Enable raster interrupts
-        STA $D01A
-        LDA #$A8        ; Raster compare to scan line $A8
-        STA $D012
-        LDA #$1B        ; 9th bit
-        STA $D011
-        LDA #30
-        STA $D018       ; Use the new charset
-        CLI             ; Enable interrupts and return
-        RTS
+        lda #>CHRSET    ; The right page for addressing
+        sta ZP2+1
+        lda #<IRQ       ; Our interrupt handler address
+        sta $0314
+        lda #>IRQ
+        sta $0315
+        lda #$7F        ; Disable timer interrupts
+        sta $DC0D
+        lda #$81        ; Enable raster interrupts
+        sta $D01A
+        lda #$A8        ; Raster compare to scan line $A8
+        sta $D012
+        lda #$1B        ; 9th bit
+        sta $D011
+        lda #30
+        sta $D018       ; Use the new charset
+        cli             ; Enable interrupts and return
+        rts
 
-IRQ     INC START       ; Increase counter
-        LDY #AMOUNT
-        LDX START
-LOOP4   LDA SINUS,X     ; Count a pointer for each text char and according
-        AND #7          ;  to it fetch a y-position from the sinus table
-        STA YPOS,Y      ;   Then divide it to two bytes
-        LDA SINUS,X
-        LSR
-        LSR
-        LSR
-        STA YPOSH,Y
-        INX             ; Chars are two positions apart
-        INX
-        DEY
-        BPL LOOP4
+IRQ     inc START       ; Increase counter
+        ldy #AMOUNT
+        ldx START
+LOOP4   lda SINUS,X     ; Count a pointer for each text char and according
+        and #7          ;  to it fetch a y-position from the sinus table
+        sta YPOS,Y      ;   Then divide it to two bytes
+        lda SINUS,X
+        lsr
+        lsr
+        lsr
+        sta YPOSH,Y
+        inx             ; Chars are two positions apart
+        inx
+        dey
+        bpl LOOP4
 
-        LDA #0
-        LDX #79
-LOOP11  STA GFX,X       ; Clear the dycp data
-        STA GFX+80,X
-        STA GFX+160,X
-        STA GFX+240,X
-        STA GFX+320,X
-        STA GFX+400,X
-        STA GFX+480,X
-        STA GFX+560,X
-        DEX
-        BPL LOOP11
+        lda #0
+        ldx #79
+LOOP11  sta GFX,X       ; Clear the dycp data
+        sta GFX+80,X
+        sta GFX+160,X
+        sta GFX+240,X
+        sta GFX+320,X
+        sta GFX+400,X
+        sta GFX+480,X
+        sta GFX+560,X
+        dex
+        bpl LOOP11
 
-MAKE    LDA COUNTER     ; Set x-scroll register
-        STA $D016
-        LDX #AMOUNT
-        CLC             ; Clear carry
-LOOP5   LDY YPOSH,X     ; Determine the position in video matrix
-        TXA
-        ADC LINESL,Y    ; Carry won't be set here
-        STA ZP          ; low byte
-        LDA #4
-        ADC LINESH,Y
-        STA ZP+1        ; high byte
-        LDA #PADCHAR    ; First clear above and below the char
-        LDY #0          ; 0. row
-        STA (ZP),Y
-        LDY #120        ; 3. row
-        STA (ZP),Y
-        TXA             ; Then put consecuent character codes to the places
-        ASL             ;  Carry will be cleared
-        ORA #$80        ; Inverted chars
-        LDY #40         ; 1. row
-        STA (ZP),Y
-        ADC #1          ; Increase the character code, Carry won't be set
-        LDY #80         ; 2. row
-        STA (ZP),Y
+MAKE    lda COUNTER     ; Set x-scroll register
+        sta $D016
+        ldx #AMOUNT
+        clc             ; Clear carry
+LOOP5   ldy YPOSH,X     ; Determine the position in video matrix
+        txa
+        adc LINESL,Y    ; Carry won't be set here
+        sta ZP          ; low byte
+        lda #4
+        adc LINESH,Y
+        sta ZP+1        ; high byte
+        lda #PADCHAR    ; First clear above and below the char
+        ldy #0          ; 0. row
+        sta (ZP),Y
+        ldy #120        ; 3. row
+        sta (ZP),Y
+        txa             ; Then put consecuent character codes to the places
+        asl             ;  Carry will be cleared
+        ora #$80        ; Inverted chars
+        ldy #40         ; 1. row
+        sta (ZP),Y
+        adc #1          ; Increase the character code, Carry won't be set
+        ldy #80         ; 2. row
+        sta (ZP),Y
 
-        LDA CHAR,X      ; What character to plot ? (source)
-        STA ZP2         ;  (char is already multiplicated by eight)
-        LDA X16,X       ; Destination low byte
-        ADC YPOS,X      ;  (16*char code + y-position's 3 lowest bits)
-        STA ZP
-        LDA D16,X       ; Destination high byte
-        STA ZP+1
+        lda CHAR,X      ; What character to plot ? (source)
+        sta ZP2         ;  (char is already multiplicated by eight)
+        lda X16,X       ; Destination low byte
+        adc YPOS,X      ;  (16*char code + y-position's 3 lowest bits)
+        sta ZP
+        lda D16,X       ; Destination high byte
+        sta ZP+1
 
-        LDY #6          ; Transfer 7 bytes from source to destination
-        LDA (ZP2),Y
-        STA (ZP),Y
-        DEY             ; This is the fastest way I could think of.
-        LDA (ZP2),Y
-        STA (ZP),Y
-        DEY
-        LDA (ZP2),Y
-        STA (ZP),Y
-        DEY
-        LDA (ZP2),Y
-        STA (ZP),Y
-        DEY
-        LDA (ZP2),Y
-        STA (ZP),Y
+        ldy #6          ; Transfer 7 bytes from source to destination
+        lda (ZP2),Y
+        sta (ZP),Y
+        dey             ; This is the fastest way I could think of.
+        lda (ZP2),Y
+        sta (ZP),Y
+        dey
+        lda (ZP2),Y
+        sta (ZP),Y
+        dey
+        lda (ZP2),Y
+        sta (ZP),Y
+        dey
+        lda (ZP2),Y
+        sta (ZP),Y
         dey
         lda (ZP2),Y
         sta (ZP),Y
@@ -236,6 +240,4 @@ LINESL  byte 0,40,80,120,160,200,240,24,64,104,144,184,224
 
 LINESH  byte 0,0,0,0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,2,3
 
-SCROLL  ptext "THIS@IS@AN@EXAMPLE@SCROLL@FOR@"
-        ptext "COMMODORE@MAGAZINE@BY@PASI@OJALA@@"
-        ; SCR will convert text to screen codes
+SCROLL  ptext "THIS@IS@AN@EXAMPLE@SCROLL@FOR@TECHNOLOGY@BLOG@NET@@@@@@@@@@@@"
