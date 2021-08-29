@@ -1,0 +1,29 @@
+; assembly file that can be compiled with ACME and bytecode run with VICE
+; auto generated sys (Tools->Generate Sys() Call)
+; 10 SYS (4096)
+*=$0801
+        !byte    $0E, $08, $0A, $00, $9E, $20, $28,  $34, $30, $39, $36, $29, $00, $00, $00
+
+; start address of program in memory 0x1000 = 4096)
+*=$1000
+LOOP
+        ; version 1: load color value 2 into register a and set it to border and background color
+        lda #$02
+        sta $d020   ; border color
+        sta $d021   ; background color
+        ;jmp LOOP
+
+        ; version 2: load 20 into x register and color value 2 into a register
+        ; set border and background color based on index in x register
+        ldx #$20
+        lda #$02
+        sta $d000,X
+        sta $d001,X
+        ;jmp LOOP
+
+        ; version 3: load color value 1 into y register, increment value and set border and background color
+        ldy #$01
+        iny
+        sty $d020
+        sty $d021
+        jmp LOOP

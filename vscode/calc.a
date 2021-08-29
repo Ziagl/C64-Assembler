@@ -1,0 +1,22 @@
+; assembly file that can be compiled with ACME and bytecode run with VICE
+; auto generated sys (Tools->Generate Sys() Call)
+; 10 SYS (4096)
+*=$0801
+        !byte    $0E, $08, $0A, $00, $9E, $20, $28,  $34, $30, $39, $36, $29, $00, $00, $00
+
+; start address of program in memory 0x1000 = 4096)
+*=$1000
+LOOP
+        lda #$00        ; load value 0 to register a
+        sta $d020       ; set color of register a to border
+        clc             ; clear carry flag
+        adc #$01        ; increment value in a (0 -> 1)
+        sta $d021       ; set color of register a to background
+        ;jmp LOOP
+
+        lda #$01        ; load value 1 to register a
+        sta $d021       ; set color of register a to border
+        sec             ; set carry flag
+        sbc #$01        ; decrement value in a (1 -> 0)
+        sta $d020       ; set color of register a to background
+        jmp LOOP
